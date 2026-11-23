@@ -1,15 +1,43 @@
-## API Security Testing Findings (ReqRes API)
+# API Security Testing Notes – ReqRes
 
-Testing was conducted using Burp Suite on the ReqRes API to evaluate authentication, authorization, and input validation controls.
+A small practical exercise using Burp Suite to observe API request and response behaviour on the ReqRes public test API.
 
-### 1. Input Validation Weakness
-The `page` parameter accepts non-numeric and out-of-range values while still returning HTTP 200 responses. The system defaults or ignores invalid inputs instead of rejecting them.
+## Objective
 
-### 2. Object Enumeration
-User IDs from 0–13 were accessible, returning valid responses. This indicates predictable object access patterns typical of test APIs.
+Explore how selected endpoints respond to changes in request parameters and authentication-related headers. The exercise was intended for learning and documentation, not as a formal penetration test of a production application.
 
-### 3. Authentication Enforcement
-Requests without an API key still returned successful responses (200 OK) for most endpoints. However, invalid API keys returned 401 Unauthorized, indicating partial enforcement of authentication controls.
+## Test Areas and Observations
 
-### 4. Conclusion
-The API demonstrates stable behavior and consistent responses but lacks strict input validation and uniform authentication enforcement on all endpoints. These findings are primarily observational due to the nature of the testing environment.
+### 1. Input handling
+
+The tested `page` parameter accepted non-numeric and out-of-range values while returning HTTP 200 responses.
+
+**Interpretation:** This is an input-handling observation. A successful HTTP response alone does not establish a security vulnerability; the expected behaviour depends on the API contract.
+
+### 2. Predictable identifiers
+
+Sequential user identifiers returned responses for the records available in the test dataset.
+
+**Interpretation:** Predictable identifiers are not, by themselves, proof of insecure direct object reference (IDOR). IDOR requires evidence that a user can access an object they are not authorized to access. That was not established by this observation.
+
+### 3. Authentication behaviour
+
+Some tested requests without an API key returned successful responses, while requests with an invalid API key returned HTTP 401.
+
+**Interpretation:** Authentication behaviour differed across the tested endpoints. The result should be compared with the documented requirements for each endpoint before classifying it as a security weakness.
+
+## Tools
+
+- Burp Suite
+- Browser / HTTP client
+- Manual request and response analysis
+
+## Conclusion
+
+This exercise provided practice in intercepting API traffic, modifying parameters, inspecting status codes, and distinguishing unusual behaviour from a confirmed vulnerability.
+
+No production vulnerability is claimed from these observations. Further testing would require a clearly defined authorization model, endpoint requirements, and repeatable evidence of unauthorized access or impact.
+
+## Disclaimer
+
+ReqRes is a public test API. This repository records educational observations only. Do not use these notes as evidence of a vulnerability in a production service.
